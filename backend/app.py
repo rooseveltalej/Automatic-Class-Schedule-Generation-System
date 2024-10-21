@@ -150,7 +150,7 @@ def load_professors_into_prolog():
             available_hours_list = ast.literal_eval(prof[1])
             courses_list = ast.literal_eval(prof[2])
 
-            # Parse available_hours into [Day, Start, End]
+            # Parse available_hours into ['day', Start, End]
             parsed_hours = []
             for hour in available_hours_list:
                 parts = hour.split('_')
@@ -160,7 +160,8 @@ def load_professors_into_prolog():
                     try:
                         start = int(start)
                         end = int(end)
-                        parsed_hours.append(f"[{day}, {start}, {end}]")
+                        day = day.lower()
+                        parsed_hours.append(f"['{day}', {start}, {end}]")
                     except ValueError:
                         continue  # Ignorar entradas mal formateadas
                 else:
@@ -169,10 +170,10 @@ def load_professors_into_prolog():
             available_hours_prolog = "[" + ", ".join(parsed_hours) + "]"
 
             # Parse courses as atoms
-            courses_prolog = "[" + ", ".join([course.lower().replace(' ', '_') for course in courses_list]) + "]"
+            courses_prolog = "[" + ", ".join([f"'{course.lower().replace(' ', '_')}'" for course in courses_list]) + "]"
 
-            # Insertar hechos en Prolog sin comillas alrededor de {name}
-            prolog.assertz(f"professor({name}, {available_hours_prolog}, {courses_prolog})")
+            # Insertar hechos en Prolog
+            prolog.assertz(f"professor('{name}', {available_hours_prolog}, {courses_prolog})")
         return {"message": "Professors loaded into Prolog successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -185,12 +186,12 @@ def load_courses_into_prolog():
         courses = execute_query(query)
         for course in courses:
             name = course[0].lower().replace(' ', '_')
-            room_type = course[1]
+            room_type = course[1].lower().replace(' ', '_')
             credits = course[2]
             semester = course[3]
             
-            # Insertar hechos en Prolog sin comillas alrededor de {name}
-            prolog.assertz(f"course({name}, '{room_type}', {credits}, {semester})")
+            # Insertar hechos en Prolog
+            prolog.assertz(f"course('{name}', '{room_type}', {credits}, {semester})")
         return {"message": "Courses loaded into Prolog successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -280,6 +281,48 @@ def list_courses_in_prolog():
                 "semester": result['Semester']
             })
         return courses
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+# Endpoint para generar horarios según paridad de semestre
+@app.get("/generate_schedule/")
+def generate_schedule(parity: str):
+    if parity not in ['even', 'odd']:
+        raise HTTPException(status_code=400, detail="Parity must be 'even' or 'odd'")
+
+    try:
+        # Construir la consulta Prolog
+        # Utilizamos findall para obtener todas las soluciones posibles
+        query = f"find_schedule_for_semester_parity('{parity}', Schedule)"
+        prolog_query = list(prolog.query(query))
+
+        if not prolog_query:
+            return {"message": "No schedule found for the given parity"}
+
+        # Extraer los horarios de la consulta
+        schedules = []
+        for result in prolog_query:
+            schedule = result["Schedule"]
+            formatted_schedule = []
+            for item in schedule:
+                course, professor, room, day, start, end = item
+                # Convertir los datos a un diccionario
+                formatted_schedule.append({
+                    "course": course,
+                    "professor": professor,
+                    "room": room,
+                    "day": day.strip("'"),
+                    "start": start,
+                    "end": end
+                })
+            schedules.append(formatted_schedule)
+            if len(schedules) == 3:
+                break  # Limitar a las primeras 3 opciones
+
+        if not schedules:
+            return {"message": "No schedule found for the given parity"}
+
+        return {"schedules": schedules}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
