@@ -1,6 +1,7 @@
 % Declarar predicados dinámicos para permitir la inserción de hechos en tiempo de ejecución
 :- dynamic professor/3.
 :- dynamic course/4.
+:- dynamic course/5.
 
 % Rooms
 room(lab1, 20, lab).
@@ -38,17 +39,18 @@ valid_time_slot(Day, Start, End) :-
     Start >= AvailableStart,
     End =< AvailableEnd.
 
-% Find possible schedules for selected courses
-find_schedule_for_courses(Courses, Schedule) :-
-    find_schedule_for_courses_helper(Courses, [], Schedule).
-
- can_teach(Professor, Course) :-
+% Definir si el profesor puede enseñar un curso
+can_teach(Professor, Course) :-
     professor(Professor, _, Courses),
     member(Course, Courses).   
 
+% Encontrar horarios posibles para los cursos seleccionados
+find_schedule_for_courses(Courses, Schedule) :-
+    find_schedule_for_courses_helper(Courses, [], Schedule).
+
 find_schedule_for_courses_helper([], Acc, Acc).
 find_schedule_for_courses_helper([Course | Rest], Acc, Schedule) :-
-    course(Course, RoomType, _, _),
+    course(Course, _, _, _),  % Usar course/4 ya que solo necesitamos 4 parámetros aquí
     can_teach(Professor, Course),
     available_professor(Professor, Day, Start, End),
     available_room(Room, RoomType),
@@ -72,3 +74,16 @@ conflict(_, _, _, Day, Start1, End1, Schedule) :-
 overlap(Start1, End1, Start2, End2) :-
     Start1 < End2,
     Start2 < End1.
+
+% Determinar la paridad de un curso basado en el semestre
+parity_of_semester(Semester, even) :-
+    Semester mod 2 =:= 0.  % Si es divisible por 2, es par
+parity_of_semester(Semester, odd) :-
+    Semester mod 2 =\= 0.  % Si no es divisible por 2, es impar
+
+% Filtrar cursos según la paridad del semestre
+find_schedule_for_semester_parity(Parity, Schedule) :-
+    findall(Course, 
+        (course(Course, _, _, Semester), parity_of_semester(Semester, Parity)),  % Filtrar por paridad
+        Courses),
+    find_schedule_for_courses(Courses, Schedule).
