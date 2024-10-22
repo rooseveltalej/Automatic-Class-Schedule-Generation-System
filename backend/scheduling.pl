@@ -50,6 +50,22 @@ valid_time_slot(Day, Start, End) :-
     End =< AvailableEnd.
 
 % Encuentra posibles horarios para cursos de semestres pares o impares
+find_n_schedules_for_semester_parity(Parity, N, Schedules) :-
+    find_n_schedules_for_semester_parity_helper(Parity, N, [], Schedules).
+
+% Helper para generar N opciones de horario distintas
+find_n_schedules_for_semester_parity_helper(_, 0, Acc, Acc) :- !.  % Ya generamos N horarios
+find_n_schedules_for_semester_parity_helper(Parity, N, Acc, Schedules) :-
+    find_schedule_for_semester_parity(Parity, Schedule),  % Generar un horario
+    \+ member(Schedule, Acc),  % Verificar que el horario sea único
+    writef('Opción de horario generada: %w\n', [Schedule]),
+    N1 is N - 1,
+    find_n_schedules_for_semester_parity_helper(Parity, N1, [Schedule | Acc], Schedules).
+find_n_schedules_for_semester_parity_helper(Parity, N, Acc, Schedules) :-
+    % Si el horario ya fue generado, simplemente intentar de nuevo
+    find_n_schedules_for_semester_parity_helper(Parity, N, Acc, Schedules).
+
+% Encuentra un horario posible para una lista de cursos
 find_schedule_for_semester_parity(Parity, Schedule) :-
     % Obtener cursos que coinciden con la paridad (pares o impares)
     findall(CourseName,

@@ -10,12 +10,20 @@ export const generateSchedule = async (selectedCourses: string[]): Promise<any[]
   return response.data;
 };
 
-export const getSemesterSchedule = async (semester: 'odd' | 'even') => {
+export const getSemesterSchedule = async (parity: 'even' | 'odd'): Promise<any[]> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/semester-schedule`, { params: { semester } });
-    return response.data;
+    const response = await fetch(`http://localhost:8000/generate_schedule/?parity=${parity}`);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || 'Failed to fetch schedule');
+    }
+    const data = await response.json();
+    if (data.schedules) {
+      return data.schedules;
+    } else {
+      throw new Error(data.message || 'No schedule found');
+    }
   } catch (error) {
-    console.error('Error fetching semester schedule:', error);
     throw error;
   }
 };

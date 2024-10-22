@@ -1,3 +1,5 @@
+// src/pages/SemesterSchedulePage.tsx
+
 import React, { useState } from 'react';
 import ScheduleDisplay from '../components/ScheduleDisplay';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -5,7 +7,7 @@ import { getSemesterSchedule } from '../api/scheduleApi';
 
 const SemesterSchedulePage: React.FC = () => {
   const [semester, setSemester] = useState<'odd' | 'even'>('odd');
-  const [schedule, setSchedule] = useState<any[]>([]);
+  const [schedule, setSchedule] = useState<any[][]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,7 +62,7 @@ const SemesterSchedulePage: React.FC = () => {
 
       {schedule.length > 0 && (
         <section>
-          <h2 className="text-2xl font-bold mb-4">Semester Schedule</h2>
+          <h2 className="text-2xl font-bold mb-4">Semester Schedule Options</h2>
           <ScheduleDisplay schedule={schedule} />
         </section>
       )}
