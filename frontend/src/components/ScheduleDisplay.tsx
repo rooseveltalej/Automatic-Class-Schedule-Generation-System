@@ -42,6 +42,7 @@ const convertDayToDate = (day: string, time: number) => {
     .toDate(); // Convertir a formato Date
 };
 
+// Función para ajustar el formato de la hora (para formato de 24 horas)
 const adjustTo24HourFormat = (time: number) => {
   // Si la hora está entre 1 PM y 11 PM, convertir a formato de 24 horas
   if (time >= 1 && time <= 4) {
@@ -49,6 +50,14 @@ const adjustTo24HourFormat = (time: number) => {
   }
   // Si la hora es entre 7 AM y 11 AM, no se modifica
   return time;
+};
+
+// Función para formatear los textos y hacerlos más legibles (eliminar _ y capitalizar palabras)
+const formatText = (text: string) => {
+  return text
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 };
 
 const ScheduleDisplay: React.FC<ScheduleDisplayProps> = ({ schedule }) => {
@@ -60,7 +69,7 @@ const ScheduleDisplay: React.FC<ScheduleDisplayProps> = ({ schedule }) => {
           const adjustedStart = adjustTo24HourFormat(item.start); // Ajustar solo las horas de la tarde
           const adjustedEnd = adjustTo24HourFormat(item.end); // Ajustar solo las horas de la tarde
           return {
-            title: `${item.course} (${item.professor})`,
+            title: `${formatText(item.course)} (${formatText(item.professor)})`,
             start: convertDayToDate(item.day, adjustedStart),
             end: convertDayToDate(item.day, adjustedEnd),
             description: item.room,

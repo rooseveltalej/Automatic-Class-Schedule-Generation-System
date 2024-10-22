@@ -87,6 +87,10 @@ const HomePage: React.FC = () => {
       {schedule.length === 0 && !loading && !error && (
         <p className="text-gray-600">No schedule generated yet. Please select courses and submit.</p>
       )}
+
+      <footer className="text-center mt-8 py-4 bg-gray-200">
+        <p className="text-gray-600">© 2024: Roosevelt Pérez - II SEMESTRE ITCR / Lenguajes de Programación</p>
+      </footer>
     </div>
   );
 };
