@@ -63,15 +63,11 @@ def create_tables():
 # Call the create_tables function to ensure tables are created
 create_tables()
 
-def nada():
-    pass
-
-
 # Endpoint to insert professors into SQLite
 @app.get("/insert_professors/")
 def insert_professors():
     professors = [
-        ("Quiros Oviedo Rocio", "12345678", "['monday_7_11', 'wednesday_12_4', 'friday_7_11']", "['elementos_de_computacion', 'introduccion_a_la_programacion', 'bases_de_datos_i']"),
+    ("Quiros Oviedo Rocio", "12345678", "['monday_7_11', 'wednesday_12_4', 'friday_7_11']", "['elementos_de_computacion', 'introduccion_a_la_programacion', 'bases_de_datos_i']"),
     ("Solis Parajeles Jonathan", "23456789", "['tuesday_12_4', 'thursday_7_11', 'monday_7_11']", "['analisis_y_diseno_de_algoritmos', 'estructuras_de_datos', 'taller_de_programacion']"),
     ("Gomez Rodriguez Luis Diego", "34567890", "['monday_12_4', 'friday_7_11', 'wednesday_7_11']", "['fundamentos_de_organizacion_de_computadoras', 'arquitectura_de_computadores', 'redes']"),
     ("Valerio Solis Lorena", "45678901", "['wednesday_7_11', 'thursday_7_11', 'tuesday_12_4']", "['taller_de_programacion', 'programacion_orientada_a_objetos', 'analisis_de_algoritmos']"),
@@ -88,8 +84,6 @@ def insert_professors():
     ("Gonzalez Quiros Rogelio", "15234567", "['monday_7_11', 'friday_12_4', 'wednesday_12_4']", "['bases_de_datos_i', 'compiladores_e_interpretes', 'fundamentos_de_organizacion_de_computadoras']"),
     ("Rojas Vega Diego", "16234567", "['tuesday_12_4', 'wednesday_12_4', 'thursday_7_11']", "['compiladores_e_interpretes', 'arquitectura_de_computadores', 'elementos_de_computacion']"),
     ("Cubillo Rojas Adalberto Jesus", "17234567", "['thursday_7_11', 'friday_7_11', 'monday_12_4']", "['inteligencia_artificial', 'investigacion_de_operaciones', 'proyecto_de_ingenieria_de_software']")
-
-
     ]
 
     try:
@@ -350,12 +344,13 @@ def list_prolog_facts():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Example usage
+# ENDPOINTS IMPORTANTES
+# Se recomienda usar una herramienta como Postman para usar los enpoints o el navegador, hay otros endpoints que no se mencionan aquí pero que se usan en el frontend
 # Run using uvicorn: `uvicorn main:app --reload`
-# Access the endpoint at: http://127.0.0.1:8000/insert_professors/
-# Access the endpoint at: http://127.0.0.1:8000/insert_courses/
-# Access the endpoint at: http://127.0.0.1:8000/load_professors_into_prolog/
-# Access the endpoint at: http://127.0.0.1:8000/load_courses_into_prolog/
-# Access the endpoint at: http://127.0.0.1:8000/get_professors/
-# Access the endpoint at: http://127.0.0.1:8000/get_courses/
+# Endpoint para añadir a los profes en la base de datos (Nada más una vez, a no ser que borre la base de datos): http://127.0.0.1:8000/insert_professors/
+# Endpoint para añadir los cursos en la base de datos (Nada más una vez, a no ser que borre la base de datos): http://127.0.0.1:8000/insert_courses/
+# Para cargar los profes a Prolog (Siempre que se inicie el server): http://127.0.0.1:8000/load_professors_into_prolog/
+# Para cargar los cursos a Prolog (Siempre que se inicie el server): http://127.0.0.1:8000/load_courses_into_prolog/
+# Para ver si los profes están cargados en la base de datos (Siempre que se inicie el server): http://127.0.0.1:8000/get_professors/
+# Para ver si los cursos están cargados en la base de datos (Siempre que se inicie el server): http://127.0.0.1:8000/get_courses/
 # Access the endpoint at: http://127.0.0.1:8000/get_schedule/
