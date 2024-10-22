@@ -336,6 +336,18 @@ def clear_prolog_facts():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/list_prolog_facts/")
+def list_prolog_facts():
+    try:
+        professors = list(prolog.query("professor(Name, AvailableHours, Courses)"))
+        courses = list(prolog.query("course(Name, RoomType, Credits, Semester)"))
+        return {
+            "professors": professors,
+            "courses": courses
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Example usage
 # Run using uvicorn: `uvicorn main:app --reload`
 # Access the endpoint at: http://127.0.0.1:8000/insert_professors/
