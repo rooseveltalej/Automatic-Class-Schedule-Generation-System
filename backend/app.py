@@ -71,23 +71,25 @@ def nada():
 @app.get("/insert_professors/")
 def insert_professors():
     professors = [
-        ("Quiros Oviedo Rocio", "12345678", "['monday_7_11', 'wednesday_12_4']", "['elementos_de_computacion', 'introduccion_a_la_programacion']"),
-        ("Solis Parajeles Jonathan", "23456789", "['tuesday_12_4', 'thursday_7_11']", "['analisis_y_diseno_de_algoritmos', 'estructuras_de_datos']"),
-        ("Gomez Rodriguez Luis Diego", "34567890", "['monday_12_4', 'friday_7_11']", "['fundamentos_de_organizacion_de_computadoras', 'arquitectura_de_computadores']"),
-        ("Valerio Solis Lorena", "45678901", "['wednesday_7_11', 'thursday_7_11']", "['taller_de_programacion', 'programacion_orientada_a_objetos']"),
-        ("Zamora Cardenas Willard", "56789012", "['monday_7_11', 'thursday_12_4']", "['bases_de_datos_i', 'bases_de_datos_ii']"),
-        ("Viquez Acuna Leonardo", "67890123", "['tuesday_7_11', 'friday_7_11']", "['lenguajes_de_programacion', 'compiladores_e_interpretes']"),
-        ("Solis Chacon Henry Emanuelle", "78901234", "['monday_7_11', 'wednesday_12_4']", "['requerimientos_de_software', 'diseno_de_software']"),
-        ("Viquez Acuna Oscar Mario", "89012345", "['tuesday_12_4', 'thursday_12_4']", "['inteligencia_artificial', 'investigacion_de_operaciones']"),
-        ("Alfaro Velasco Jorge", "90123456", "['wednesday_7_11', 'friday_12_4']", "['principios_de_sistemas_operativos', 'administracion_de_proyectos']"),
-        ("Esquivel Vega Gaudy", "01234567", "['monday_12_4', 'friday_7_11']", "['aseguramiento_de_la_calidad_del_software', 'redes']"),
-        ("Alfaro Quesada Alejandro", "11234567", "['tuesday_7_11', 'thursday_12_4']", "['proyecto_de_ingenieria_de_software']"),
-        ("Jimenez Delgado Efren Antonio", "12234567", "['wednesday_7_11', 'friday_7_11']", "['computacion_y_sociedad']"),
-        ("Ballestero Alfaro Esteban", "13234567", "['monday_12_4', 'thursday_7_11']", "['introduccion_al_desarrollo_de_paginas_web']"),
-        ("Campos Fuentes Marvin", "14234567", "['tuesday_12_4', 'wednesday_7_11']", "['analisis_de_algoritmos']"),
-        ("Gonzalez Quiros Rogelio", "15234567", "['monday_7_11', 'friday_12_4']", "['bases_de_datos_i']"),
-        ("Rojas Vega Diego", "16234567", "['tuesday_12_4', 'wednesday_12_4']", "['compiladores_e_interpretes']"),
-        ("Cubillo Rojas Adalberto Jesus", "17234567", "['thursday_7_11', 'friday_7_11']", "['inteligencia_artificial']")
+        ("Quiros Oviedo Rocio", "12345678", "['monday_7_11', 'wednesday_12_4', 'friday_7_11']", "['elementos_de_computacion', 'introduccion_a_la_programacion', 'bases_de_datos_i']"),
+    ("Solis Parajeles Jonathan", "23456789", "['tuesday_12_4', 'thursday_7_11', 'monday_7_11']", "['analisis_y_diseno_de_algoritmos', 'estructuras_de_datos', 'taller_de_programacion']"),
+    ("Gomez Rodriguez Luis Diego", "34567890", "['monday_12_4', 'friday_7_11', 'wednesday_7_11']", "['fundamentos_de_organizacion_de_computadoras', 'arquitectura_de_computadores', 'redes']"),
+    ("Valerio Solis Lorena", "45678901", "['wednesday_7_11', 'thursday_7_11', 'tuesday_12_4']", "['taller_de_programacion', 'programacion_orientada_a_objetos', 'analisis_de_algoritmos']"),
+    ("Zamora Cardenas Willard", "56789012", "['monday_7_11', 'thursday_12_4', 'wednesday_12_4']", "['bases_de_datos_i', 'bases_de_datos_ii', 'introduccion_a_la_programacion']"),
+    ("Viquez Acuna Leonardo", "67890123", "['tuesday_7_11', 'friday_7_11', 'wednesday_12_4']", "['lenguajes_de_programacion', 'compiladores_e_interpretes', 'proyecto_de_ingenieria_de_software']"),
+    ("Solis Chacon Henry Emanuelle", "78901234", "['monday_7_11', 'wednesday_12_4', 'friday_12_4']", "['requerimientos_de_software', 'diseno_de_software', 'administracion_de_proyectos']"),
+    ("Viquez Acuna Oscar Mario", "89012345", "['tuesday_12_4', 'thursday_12_4', 'monday_7_11']", "['inteligencia_artificial', 'investigacion_de_operaciones', 'aseguramiento_de_la_calidad_del_software']"),
+    ("Alfaro Velasco Jorge", "90123456", "['wednesday_7_11', 'friday_12_4', 'tuesday_12_4']", "['principios_de_sistemas_operativos', 'administracion_de_proyectos', 'redes']"),
+    ("Esquivel Vega Gaudy", "01234567", "['monday_12_4', 'friday_7_11', 'wednesday_12_4']", "['aseguramiento_de_la_calidad_del_software', 'redes', 'proyecto_de_ingenieria_de_software']"),
+    ("Alfaro Quesada Alejandro", "11234567", "['tuesday_7_11', 'thursday_12_4', 'friday_12_4']", "['proyecto_de_ingenieria_de_software', 'bases_de_datos_ii', 'compiladores_e_interpretes']"),
+    ("Jimenez Delgado Efren Antonio", "12234567", "['wednesday_7_11', 'friday_7_11', 'monday_12_4']", "['computacion_y_sociedad', 'introduccion_al_desarrollo_de_paginas_web', 'programacion_orientada_a_objetos']"),
+    ("Ballestero Alfaro Esteban", "13234567", "['monday_12_4', 'thursday_7_11', 'friday_12_4']", "['introduccion_al_desarrollo_de_paginas_web', 'fundamentos_de_organizacion_de_computadoras', 'arquitectura_de_computadores']"),
+    ("Campos Fuentes Marvin", "14234567", "['tuesday_12_4', 'wednesday_7_11', 'monday_7_11']", "['analisis_de_algoritmos', 'estrategias_de_solucion_de_problemas', 'introduccion_a_la_programacion']"),
+    ("Gonzalez Quiros Rogelio", "15234567", "['monday_7_11', 'friday_12_4', 'wednesday_12_4']", "['bases_de_datos_i', 'compiladores_e_interpretes', 'fundamentos_de_organizacion_de_computadoras']"),
+    ("Rojas Vega Diego", "16234567", "['tuesday_12_4', 'wednesday_12_4', 'thursday_7_11']", "['compiladores_e_interpretes', 'arquitectura_de_computadores', 'elementos_de_computacion']"),
+    ("Cubillo Rojas Adalberto Jesus", "17234567", "['thursday_7_11', 'friday_7_11', 'monday_12_4']", "['inteligencia_artificial', 'investigacion_de_operaciones', 'proyecto_de_ingenieria_de_software']")
+
+
     ]
 
     try:

@@ -1,15 +1,15 @@
-% Declarar predicados dinámicos
+% Declarar predicados dinámicos para permitir la inserción de hechos en tiempo de ejecución
 :- dynamic professor/3.
 :- dynamic course/4.
 
-% Rooms (Salas disponibles)
+% Rooms
 room(lab1, 20, lab).
 room(lab2, 25, lab).
 room(lab3, 30, lab).
 room(moviles, 20, normal).
 room(miniauditorio, 40, normal).
 
-% Time slots available for classes (Intervalos de tiempo disponibles para clases)
+% Time slots available for classes
 available_time_slot(monday, 7, 1130).
 available_time_slot(monday, 1230, 1600).
 available_time_slot(tuesday, 7, 1130).
@@ -21,99 +21,54 @@ available_time_slot(thursday, 1230, 1600).
 available_time_slot(friday, 7, 1130).
 available_time_slot(friday, 1230, 1600).
 
-% Predicado para determinar si un semestre es par
-is_even(Semester) :-
-    Semester mod 2 =:= 0.
-
-% Predicado para determinar si un semestre es impar
-is_odd(Semester) :-
-    Semester mod 2 =:= 1.
-
-% Reglas para determinar disponibilidad de un profesor
+% Aleatorizar la selección de horarios para profesores
 available_professor(Professor, Day, Start, End) :-
     professor(Professor, AvailableHours, _),
-    member([Day, Start, End], AvailableHours).
+    findall([Day, Start, End], member([Day, Start, End], AvailableHours), Options),
+    random_member([Day, Start, End], Options).
 
-% Reglas para determinar disponibilidad de una sala
+% Aleatorizar la selección de salones
 available_room(Room, RoomType) :-
-    room(Room, _, RoomType).
+    findall(Room, room(Room, _, RoomType), Rooms),
+    random_member(Room, Rooms).
 
-% Verifica si un profesor puede enseñar un curso
-can_teach(Professor, Course) :-
-    professor(Professor, _, Courses),
-    member(Course, Courses).
-
-% Valida que el horario esté dentro de las franjas disponibles
+% Modificar esta regla para que el intervalo del profesor esté dentro del intervalo disponible
 valid_time_slot(Day, Start, End) :-
     available_time_slot(Day, AvailableStart, AvailableEnd),
     Start >= AvailableStart,
     End =< AvailableEnd.
 
-% Encuentra posibles horarios para cursos de semestres pares o impares
-find_n_schedules_for_semester_parity(Parity, N, Schedules) :-
-    find_n_schedules_for_semester_parity_helper(Parity, N, [], Schedules).
-
-% Helper para generar N opciones de horario distintas
-find_n_schedules_for_semester_parity_helper(_, 0, Acc, Acc) :- !.  % Ya generamos N horarios
-find_n_schedules_for_semester_parity_helper(Parity, N, Acc, Schedules) :-
-    find_schedule_for_semester_parity(Parity, Schedule),  % Generar un horario
-    \+ member(Schedule, Acc),  % Verificar que el horario sea único
-    writef('Opción de horario generada: %w\n', [Schedule]),
-    N1 is N - 1,
-    find_n_schedules_for_semester_parity_helper(Parity, N1, [Schedule | Acc], Schedules).
-find_n_schedules_for_semester_parity_helper(Parity, N, Acc, Schedules) :-
-    % Si el horario ya fue generado, simplemente intentar de nuevo
-    find_n_schedules_for_semester_parity_helper(Parity, N, Acc, Schedules).
-
-% Encuentra un horario posible para una lista de cursos
-find_schedule_for_semester_parity(Parity, Schedule) :-
-    % Obtener cursos que coinciden con la paridad (pares o impares)
-    findall(CourseName,
-        (course(CourseName, _, _, Semester),
-         ( (Parity = even, is_even(Semester)) ;
-           (Parity = odd, is_odd(Semester)) )),
-        Courses),
-    % Encontrar horarios para esos cursos
-    find_schedule_for_courses(Courses, Schedule).
-
-% Encuentra un horario posible para una lista de cursos sin preocuparse por intentos
+% Find possible schedules for selected courses
 find_schedule_for_courses(Courses, Schedule) :-
     find_schedule_for_courses_helper(Courses, [], Schedule).
 
-% Asigna horarios a los cursos seleccionados, salta un curso si genera conflicto o ya está asignado
-find_schedule_for_courses_helper([], Acc, Acc) :- !.  
+ can_teach(Professor, Course) :-
+    professor(Professor, _, Courses),
+    member(Course, Courses).   
+
+find_schedule_for_courses_helper([], Acc, Acc).
 find_schedule_for_courses_helper([Course | Rest], Acc, Schedule) :-
-    % Verificar si el curso ya ha sido asignado previamente
-    (   member([Course, _, _, _, _, _], Acc)
-    ->  writef('Curso ya asignado: %w, saltando al siguiente\n', [Course]),
-        find_schedule_for_courses_helper(Rest, Acc, Schedule)
-    ;   % Intentar asignar el curso
-        course(Course, RoomType, _, _),
-        can_teach(Professor, Course),
-        available_professor(Professor, Day, Start, End),
-        valid_time_slot(Day, Start, End),
-        available_room(Room, RoomType),
-        \+ conflict(Course, Professor, Room, Day, Start, End, Acc)
-    ->  % Si no hay conflicto, asignamos el curso
-        writef('Asignando curso: %w con profesor %w en sala %w el %w de %w a %w\n',
-               [Course, Professor, Room, Day, Start, End]),
-        NewAcc = [[Course, Professor, Room, Day, Start, End] | Acc],
-        find_schedule_for_courses_helper(Rest, NewAcc, Schedule)
-    ;   % Si hay conflicto, se salta el curso
-        writef('Conflicto encontrado para el curso: %w, saltando al siguiente curso\n', [Course]),
-        find_schedule_for_courses_helper(Rest, Acc, Schedule)
-    ).
+    course(Course, RoomType, _, _),
+    can_teach(Professor, Course),
+    available_professor(Professor, Day, Start, End),
+    available_room(Room, RoomType),
+    valid_time_slot(Day, Start, End),
+    \+ conflict(Course, Professor, Room, Day, Start, End, Acc),
+    NewAcc = [[Course, Professor, Room, Day, Start, End] | Acc],
+    find_schedule_for_courses_helper(Rest, NewAcc, Schedule).
 
-% Reglas para detectar conflictos entre horarios
-conflict(_, Professor, _, Day, Start1, End1, Schedule) :-
-    member([_, Professor, _, Day, Start2, End2], Schedule),
+% Definir un predicado para evitar conflictos
+conflict(_, Professor, _, Day, Start, End, Schedule) :-
+    member([_, Professor, _, Day, Start, End], Schedule).
+
+conflict(_, _, Room, Day, Start, End, Schedule) :-
+    member([_, _, Room, Day, Start, End], Schedule).
+
+conflict(_, _, _, Day, Start1, End1, Schedule) :-
+    member([_, _, _, Day, Start2, End2], Schedule),
     overlap(Start1, End1, Start2, End2).
 
-conflict(_, _, Room, Day, Start1, End1, Schedule) :-
-    member([_, _, Room, Day, Start2, End2], Schedule),
-    overlap(Start1, End1, Start2, End2).
-
-% Verifica si dos franjas horarias se solapan
+% Definir cómo determinar si dos intervalos de tiempo se solapan
 overlap(Start1, End1, Start2, End2) :-
     Start1 < End2,
     Start2 < End1.
