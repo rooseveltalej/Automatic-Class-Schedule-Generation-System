@@ -17,7 +17,6 @@ This project provides a robust solution for the automatic generation of class sc
   - [API Endpoints](#api-endpoints)
 - [Technical Challenges](#technical-challenges)
 - [Future Enhancements](#future-enhancements)
-- [Author](#author)
 
 ## General Description
 
